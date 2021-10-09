@@ -1,0 +1,75 @@
+schema {
+  query: Query
+  mutation: Mutation
+}
+
+type CreateMeaning {
+  meaning: MeaningType
+  code: String
+}
+
+type CreateWord {
+  word: WordType
+  code: Int
+}
+
+type DeleteMeaning {
+  message: String
+  code: Int
+}
+
+type DeleteWord {
+  message: String
+  code: Int
+}
+
+input MeaningInput {
+  word: Int
+  pos: String
+  meaning: String
+}
+
+enum MeaningPos {
+  NOUN
+  PRONOUN
+  VERB
+  ADJECTIVE
+  ADVERB
+  PREPOSITION
+  CONJUNCTION
+  INTERJECTION
+}
+
+type MeaningType {
+  id: ID!
+  word: WordType!
+  pos: MeaningPos
+  posVerbose: String
+  meaning: String!
+}
+
+type Mutation {
+  createWord(input: WordInput!): CreateWord
+  createMeaning(input: MeaningInput!): CreateMeaning
+  deleteWord(id: Int!): DeleteWord
+  deleteMeaning(id: Int!): DeleteMeaning
+}
+
+type Query {
+  words: [WordType]
+  word(name: String!): WordType
+}
+
+input WordInput {
+  name: String
+  baseWord: String
+  pronounciation: String
+}
+
+type WordType {
+  id: ID!
+  name: String!
+  baseWord: String
+  pronounciation: String
+  meaning: [MeaningType!]!
+}
