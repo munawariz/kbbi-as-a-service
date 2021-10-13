@@ -1,5 +1,5 @@
 import graphene
-from word.models import Word, Meaning
+from word.models import POS, Word, Meaning
 from word.types import MeaningType, WordInput, MeaningInput, WordType
 
 
@@ -45,16 +45,26 @@ class CreateMeaning(graphene.Mutation):
     meaning = graphene.Field(MeaningType)
     code = graphene.String()
 
+    def find_and_add_pos(self, pos):
+        pass
+
     @staticmethod
     def mutate(self, info, input=None):
         word = Word.objects.get(id=input.word)
-        meaning = Meaning(
+        meaning = Meaning.objects.create(
             word=word,
-            pos=input.pos,
             meaning=input.meaning
         )
 
-        meaning.save()
+        pos_id = []
+        for pos in input.pos:
+            pos_data, created = POS.objects.get_or_create(
+                code=pos['code'].lower(),
+                defaults={'verbose': pos['verbose'].lower(), 'description': pos['description'].lower()}
+            )
+            pos_id.append(pos_data.id)    
+        meaning.pos.set(pos_id)
+
         return CreateMeaning(meaning=meaning, code=200)
 
 class DeleteMeaning(graphene.Mutation):

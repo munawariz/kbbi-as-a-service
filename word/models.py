@@ -15,27 +15,19 @@ class Word(models.Model):
         return super(Word, self).save(*args, **kwargs)
 
 
-class Meaning(models.Model):
-    # Short for part of speech
-    POS = [
-        ('noun', 'Kata Benda'),
-        ('pronoun', 'Kata Ganti'),
-        ('verb', 'Kata Kerja'),
-        ('adjective', 'Kata Sifat'),
-        ('adverb', 'Kata Keterangan'),
-        ('preposition', 'Kata Depan'),
-        ('conjunction', 'Kata Hubung'),
-        ('interjection', 'Kata Seru')
-    ]
-
-    word = models.ForeignKey(Word, on_delete=models.CASCADE, related_name='meaning')
-    pos = models.CharField(max_length=20, choices=POS, null=True, blank=True)
-    pos_verbose = models.CharField(max_length=64, null=True, blank=True)
-    meaning = models.CharField(max_length=1024)
+class POS(models.Model):
+    code = models.CharField(max_length=5)
+    verbose = models.CharField(max_length=64, null=True, blank=True)
+    description = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
-        return f'{self.word.name} ({self.pos})'
+        return self.verbose
 
-    def save(self, *args, **kwargs):
-        self.pos_verbose = self.get_pos_display()
-        return super(Meaning, self).save(*args, **kwargs)
+
+class Meaning(models.Model):
+    word = models.ForeignKey(Word, on_delete=models.CASCADE, related_name='meaning')
+    pos = models.ManyToManyField(POS, related_name='meaning', blank=True)
+    meaning = models.CharField(max_length=1024, null=True, blank=True)
+
+    def __str__(self):
+        return f'{self.word.name} ({self.id})'
