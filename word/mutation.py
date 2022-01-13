@@ -45,9 +45,6 @@ class CreateMeaning(graphene.Mutation):
     meaning = graphene.Field(MeaningType)
     code = graphene.String()
 
-    def find_and_add_pos(self, pos):
-        pass
-
     @staticmethod
     def mutate(self, info, input=None):
         word = Word.objects.get(id=input.word)
